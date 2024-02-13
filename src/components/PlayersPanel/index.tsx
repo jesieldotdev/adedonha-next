@@ -34,7 +34,7 @@ const PlayersPanel = ({ userForm, players, clientID, forms }: PlayersPanelProps)
     return (
         <S.Container>
             {
-                players.length && players.map(player => <p><PeopleFill size={24} /> {actualPlayer?.id === player.id ? 'Você' : player.name} {`(${getScoreBoard(player.id)} / ${9})`}</p>)
+                players.length && players.map(player => <p key={player.id}><PeopleFill size={24} /> {actualPlayer?.id === player.id ? 'Você' : player.name} {`(${getScoreBoard(player.id)} / ${9})`}</p>)
             }
         </S.Container>
     )

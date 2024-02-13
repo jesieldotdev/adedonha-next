@@ -30,7 +30,7 @@ const StartRound = ({
 
             {
                 room && room.players && room.players.map(player =>
-                    <div className="row mt-8">
+                    <div key={player.id} className="row mt-8">
                         <PersonFill size={18} color="#fefefe" /> <p key={player.id}>{player.name}</p>
                     </div>
                 )

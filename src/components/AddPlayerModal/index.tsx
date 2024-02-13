@@ -28,7 +28,7 @@ const AddPlayerModal = ({ isOpen, close, rooms, players, }: AddPlayerModalProps)
   const [roomName, setRoomName] = React.useState<string>('')
 
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (playerName && playerName.trim() !== '') {
       changePlayerName(playerName)

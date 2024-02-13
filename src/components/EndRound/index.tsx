@@ -18,6 +18,7 @@ interface EndRoundProps {
     answers: Answers[]
     players: Player[]
     clientID: string
+    endRound: number | undefined
 }
 
 interface Winner {
@@ -33,15 +34,17 @@ const EndRound = ({
     playerAnswer,
     answers,
     players,
-    clientID
+    clientID,
+    endRound
 }: EndRoundProps) => {
 
 
     console.log(room)
+    console.log(endRound)
     return (
         <S.EndRoundContainer>
             {/* <p className="room_name">{roomName}</p> */}
-            <p className="room_name">A partida {room.currentRound} acabou!</p>
+            <p className="room_name">A partida {endRound} acabou!</p>
             <div className="row mt-16">
                 <Timer size={18} /><p>{room.duration} segundos</p>
             </div>

@@ -12,7 +12,7 @@ import {
 import * as S from "./styles"
 import FormViewController from "./viewController";
 import { useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { SendForm, Topic, UserFormTopics } from "@/models/General";
 import PlayersPanel from "../PlayersPanel";
 import React from "react";
@@ -27,12 +27,15 @@ import { Timer } from "styled-icons/boxicons-regular"
 import { TargetArrow } from "styled-icons/fluentui-system-filled"
 import { TrophyFill } from "@styled-icons/bootstrap/TrophyFill"
 import RoundPanel from "../RoundPanel";
+import Roullete from "../Roullete";
+import GameRoullete from "../GameRoullete";
 
 const FormGame = () => {
   const router = useRouter()
-  const [userForm, setUserForm] = React.useState<UserFormTopics>()
-  const [startedRound, setStartedRound] = React.useState<boolean>(false)
-  const [endRound, setEndRound] = React.useState<boolean>(false)
+  const [userForm, setUserForm] = React.useState<UserFormTopics | FieldValues>()
+  const [startedRound, setStartedRound] = React.useState<boolean>()
+  const [letter, setLetter] = React.useState<string>('a')
+  const [showRoullete, setShowRoullete] = React.useState<boolean>(false)
   const {
     players,
     rooms,
@@ -43,7 +46,8 @@ const FormGame = () => {
     timer,
     currentRound,
     startRound,
-    actualRoomState
+    actualRoomState,
+    endRound
   } = useGameContext()
   const selectedLetter = "J";
   const {
@@ -56,7 +60,7 @@ const FormGame = () => {
     formState: { errors } } = useForm();
   const { slug } = router.query
 
-
+  const existRoom = rooms.findIndex(room => room.id === slug)
   const actualRoom = rooms?.find(item => item.id === slug)
   const playerAnswer = actualRoom?.answers.find(item => item.userID === clientID)
 
@@ -64,18 +68,26 @@ const FormGame = () => {
     console.log(data); // Aqui você terá acesso aos dados do formulário após o envio
   };
 
+  function getUserName(): string {
+
+    if (players && players.findIndex(item => item.id === socket.id)) {
+      const x = players.find(item => item.id === socket.id)
+      return x?.name ? x.name : ''
+    }
+    return ''
+  }
 
   const { topics, ramdomColor, color } = FormViewController();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
     setValue(fieldName, e.target.value);
-    if (fieldName) {
+    if (socket.id && fieldName) {
       setUserForm(getValues())
       const data = {
         userID: socket.id,
-        userName: players.find(item => item.id === socket.id)?.name,
+        userName: getUserName(),
         form: userForm
-      }
+      } as SendForm
       sendForm(data)
     }
 
@@ -86,7 +98,8 @@ const FormGame = () => {
   }
   function handleClickStart() {
     if (actualRoom) {
-      startRound(actualRoom.id)
+      setShowRoullete(false)
+      startRound(actualRoom.id, letter)
       reset()
     }
   }
@@ -95,10 +108,10 @@ const FormGame = () => {
     if (!actualRoom) {
       router.push('/')
     }
-  }, [actualRoom])
+  }, [actualRoom, router])
 
   React.useEffect(() => {
-    if (actualRoom && actualRoom.timer < actualRoom.duration) {
+    if (actualRoom && actualRoom.timer < actualRoom.duration && actualRoom.timer !== 0) {
       setStartedRound(true)
     }
     else
@@ -109,30 +122,46 @@ const FormGame = () => {
 
   console.log(playerAnswer)
   console.log(players)
+  console.log(startedRound)
 
   return (
 
-    actualRoom ?
+
+    existRoom !== -1 && actualRoom ?
       <S.FormContainer>
+
         {
-          actualRoom.timer === 0 ?
+          actualRoom.timer === 0 && !showRoullete && !startedRound ?
             <EndRound
               homeFunction={handleClickHome}
-              startFunction={handleClickStart}
+              startFunction={()=> {
+                setShowRoullete(true)
+              }}
               room={actualRoom}
               playerAnswer={playerAnswer}
               answers={actualRoom.answers}
               players={actualRoom.players}
               clientID={clientID}
+              endRound={endRound}
             /> : null
         }
-        {actualRoom.currentRound === 1 ? <StartRound
-          startFunction={handleClickStart}
+        { actualRoom.timer === actualRoom.duration && !showRoullete  ? 
+        <StartRound
+          startFunction={() =>{
+            setShowRoullete(true)
+
+          }}
           homeFunction={handleClickHome}
           room={actualRoom}
         />
           : null
         }
+
+        {showRoullete ? <GameRoullete setLetter={setLetter} startButton={()=>{
+          handleClickStart()
+        }}/> : null}
+
+
         {actualRoom.timer < actualRoom.duration ? <>
 
           {actualRoom.timer !== 0 ? <RoundPanel
@@ -144,15 +173,17 @@ const FormGame = () => {
             letter={actualRoom.letter.toUpperCase()}
           /> : null}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+
+          <form
+          // onSubmit={e =>  handleSubmit(e)}
+          >
 
             <S.FormWrapper>
               {topics.map((item) => (
                 <S.FormItem className="form-item" key={item.name}>
                   <FormControl className="form-control">
                     <TextField
-
-                      disabled={actualRoom.timer <= 0}
+                      disabled={!!endRound}
                       id={item.name}
                       className="text-field"
                       placeholder={item.name}
@@ -196,7 +227,7 @@ const FormGame = () => {
                       </FormHelperText> :
                       <FormHelperText color="red" id="my-helper-text">
 
-                        {item.name} com a letra <span>{selectedLetter}</span>
+                        {item.name} com a letra <span>{actualRoom.letter.toLocaleUpperCase()}</span>
                       </FormHelperText>}
                   </FormControl>
                 </S.FormItem>

@@ -3,10 +3,11 @@ import * as S from './styles'
 import { Timer, User } from 'styled-icons/boxicons-regular'
 import { TargetArrow } from 'styled-icons/fluentui-system-filled'
 import { People, PeopleFill } from 'styled-icons/bootstrap'
+import { FieldValues } from 'react-hook-form'
 
 interface RoundPanelProps {
     actualRoom: Room
-    userForm: UserFormTopics | undefined
+    userForm: UserFormTopics | undefined | FieldValues
     players: Player[]
     clientID: string
     forms: SendForm[]
@@ -55,7 +56,7 @@ const RoundPanel = ({
             <div className='column'>
 
                 {
-                    players.length && players.map(player => <p className='mt-8'><User size={18} /> {actualPlayer?.id === player.id ? 'Você' : player.name} {`(${getScoreBoard(player.id)} / ${9})`}</p>)
+                    players.length && players.map(player => <p key={player.id} className='mt-8'><User size={18} /> {actualPlayer?.id === player.id ? 'Você' : player.name} {`(${getScoreBoard(player.id)} / ${9})`}</p>)
                 }
             </div>
 

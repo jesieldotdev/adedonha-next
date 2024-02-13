@@ -1,14 +1,22 @@
 import { Button } from "@mui/material";
-import * as S from "./style";
-import { useState } from "react";
-import Roullete from "../Roullete";
-import GameFormViewController  from "./viewController";
+import * as S from "./styles";
+import { Suspense, useState } from "react";
+// import Roullete from "../Roullete";
+const RoulleteLazy = React.lazy(() => import('../Roullete'));
+import GameFormViewController from "./viewController";
 // import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import Question from '../../assets/Lotties/question.json'
 import MusicPlayer from "../MusicPlayer";
+import React from "react";
+import { useRouter } from "next/router";
 
-const GameForm = () => {
+interface RoundRoulleteProps {
+  startButton: () => void
+  setLetter: (l: string) => void
+}
+
+const RoundRoullete = ({ startButton, setLetter }: RoundRoulleteProps) => {
   const {
     handleSpinClick,
     data,
@@ -24,6 +32,14 @@ const GameForm = () => {
     audioRef
   } = GameFormViewController();
 
+
+  React.useEffect(() => {
+    if (prizeNumber) {
+      setLetter(letters[prizeNumber])
+
+    }
+  }, [prizeNumber])
+
   return (
     <S.GameFormContainer>
       <div>
@@ -36,13 +52,16 @@ const GameForm = () => {
       <div style={{
         // backgroundColor:'red'
       }}>
-        <Roullete
-          letters={data}
-          mustSpin={mustSpin}
-          prizeNumber={prizeNumber}
-          setMustSpin={setMustSpin}
-          handleSpinClick={undefined}
-        />
+        <Suspense fallback={<div>Carregando...</div>}>
+          <RoulleteLazy
+            letters={data}
+            mustSpin={mustSpin}
+            prizeNumber={prizeNumber}
+            setMustSpin={setMustSpin}
+            handleSpinClick={undefined}
+          />
+        </Suspense>
+
 
         {!mustSpin ? (
           <>
@@ -50,7 +69,7 @@ const GameForm = () => {
           </>
         ) : null}
 
-        <MusicPlayer isPlaying={mustSpin} setIsPlaying={setIsPlaying} togglePlay={() => togglePlay()} audioRef={audioRef}  />
+        <MusicPlayer isPlaying={mustSpin} setIsPlaying={setIsPlaying} togglePlay={() => togglePlay(true)} audioRef={audioRef} />
 
         <S.GridContainer>
           <Button
@@ -60,7 +79,19 @@ const GameForm = () => {
           >
             Girar Roleta
           </Button>
-          {alreadySpin && !mustSpin ? (
+          <Button
+            color="success"
+            disabled={mustSpin}
+            variant="contained"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              startButton()
+            }}
+          >
+            Começar
+          </Button>
+          {/* {alreadySpin && !mustSpin ? (
             <Link
               style={{
                 textDecoration: "none",
@@ -76,11 +107,11 @@ const GameForm = () => {
                 Continuar
               </Button>
             </Link>
-          ) : null}
+          ) : null} */}
         </S.GridContainer>
       </div>
     </S.GameFormContainer>
   );
 };
 
-export default GameForm;
+export default RoundRoullete;

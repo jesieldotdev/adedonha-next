@@ -19,7 +19,7 @@ type GameContextProps = {
     sendForm: (userForm: SendForm) => void
     socket: Socket
     forms: SendForm[]
-    startRound: (roomID: string)=>void
+    startRound: (roomID: string, letter: string)=>void
     currentRound: number | undefined
     endRound: number | undefined
     timer: number | undefined
@@ -64,8 +64,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    function startRound(roomID: string) {
-        socket.emit('startGame', roomID)
+    function startRound(roomID: string, letter: string) {
+        socket.emit('startGame', roomID, letter)
     }
 
     React.useEffect(() => {
@@ -86,12 +86,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         socket.on('client_id', function (clientId) {
             setClientID(clientId)
         });
-        socket.on('gameStarted', function (currentRound) {
+        socket.on('startRound', function (currentRound) {
             setCurrentRound(currentRound)
         });
-        // socket.on('endRound', function (currentRound) {
-        //     setEndRound(currentRound)
-        // });
+        socket.on('endRound', function (currentRound) {
+            setEndRound(currentRound)
+        });
         socket.on('updateTimer', function (timer) {
             setTimer(timer);
         });
@@ -106,6 +106,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
 console.log(forms)
 console.log(rooms)
+console.log(currentRound)
+console.log(endRound)
 console.log(answers)
     return (
         <GameContext.Provider
@@ -128,7 +130,7 @@ console.log(answers)
                 endRound,
                 startRound,
                 actualRoomState,
-                answers
+                answers,
             }}>
             {children}
         </GameContext.Provider>
@@ -138,7 +140,7 @@ console.log(answers)
 export function useGameContext(): GameContextProps {
     const context = useContext(GameContext);
     if (!context) {
-        throw new Error('useThemes must be used within a GameContext');
+        throw new Error('useGameContext must be used within a GameContext');
     }
     return context;
 }
