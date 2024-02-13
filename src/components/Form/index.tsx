@@ -111,6 +111,11 @@ const FormGame = () => {
   }, [actualRoom, router])
 
   React.useEffect(() => {
+    if(!endRound)
+      reset()
+  }, [endRound])
+
+  React.useEffect(() => {
     if (actualRoom && actualRoom.timer < actualRoom.duration && actualRoom.timer !== 0) {
       setStartedRound(true)
     }
