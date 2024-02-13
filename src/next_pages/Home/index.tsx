@@ -37,7 +37,7 @@ const HomePage = () => {
                 >
                     Jogar
                 </Button>
-                <Button
+                {/* <Button
                     sx={{
                         backgroundColor: "#6524BF",
                     }}
@@ -46,7 +46,7 @@ const HomePage = () => {
                     color="primary"
                 >
                     Adicionar Jogador
-                </Button>
+                </Button> */}
                 <Button
                     onClick={(e) => {
                         e.preventDefault()

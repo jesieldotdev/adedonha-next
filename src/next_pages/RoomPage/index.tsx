@@ -4,7 +4,7 @@ const RoomPage = () => {
 
     return (
         <>
-        <FormGame />
+            <FormGame />
         </>
     )
 }

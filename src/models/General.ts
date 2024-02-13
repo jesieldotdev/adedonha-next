@@ -1,10 +1,23 @@
 export interface Player {
-    id: number
+    id: string
     name: string
 }
+
+export interface Score extends Player {
+    hits: number
+    points: number
+  }
 export interface Room {
-    id: number
-    name: string
+    id: string;
+    name: string;
+    players: Player[];
+    currentRound: number;
+    duration: number;
+    timer: number;
+    letter: string
+    answers: Answers[]
+    score: Score | undefined
+    winner: Score | undefined
 }
 
 export interface Topic {
@@ -12,7 +25,7 @@ export interface Topic {
     icon: string
 }
 
-export interface userFormTopics {
+export interface UserFormTopics {
     Nome: string;
     Lugar: string;
     Animal: string;
@@ -22,4 +35,16 @@ export interface userFormTopics {
     'Profissão': string;
     FDN: string;
     'Parte do corpo': string;
+  }
+
+  export interface SendForm{
+    userID: string
+    userName: string
+    form: UserFormTopics
+  }
+
+  export interface Answers {
+    userID: string;
+    form: UserFormTopics;
+    hits: number;
   }

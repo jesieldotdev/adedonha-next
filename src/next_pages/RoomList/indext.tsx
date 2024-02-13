@@ -11,11 +11,19 @@ const RoomList = () => {
     const {
         players,
         rooms,
-        handleCreateRoom
+        handleCreateRoom,
+        joinRoom
     } = useGameContext()
     const viewController = RoomListViewController()
     const router = useRouter()
     const [roomName, setRoomName] = React.useState<string>('')
+
+    function handleJoinRoom(roomId: string): void {
+        if (roomId) {
+            joinRoom(roomId)
+            router.push(`/rooms/${roomId}`);
+        }
+    }
 
     return (
         <S.Container>
@@ -28,7 +36,9 @@ const RoomList = () => {
                                 rooms.map(room => <Button onClick={(e) => {
                                     e.stopPropagation()
                                     e.preventDefault()
-                                    router.push(`/rooms/${room.id}`);
+                                    if (room && room.id) {
+                                        handleJoinRoom(room.id)
+                                    }
                                 }} className="room_btn" key={room.id}>{room.name} <DoorOpenFill size={18} color='#323232' /></Button>)
                             }
                         </div>

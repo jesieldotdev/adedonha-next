@@ -5,6 +5,8 @@ export const FormContainer = styled.div`
   flex-direction: column;
   margin: 16px;
 
+  font-family: 'Poppins', sans-serif !important;
+
   .title {
     font-size: 64px;
     font-weight: 900;
@@ -14,6 +16,20 @@ export const FormContainer = styled.div`
 
   span {
     font-weight: 600;
+  }
+
+  .correct_answer{
+    color: green;
+  }
+
+  .wrong_answer{
+    color: red;
+  }
+
+  .points{
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif !important;
   }
 `;
 
@@ -25,6 +41,12 @@ export const FormWrapper = styled.div`
 
   @media (min-width: 601px) {
     grid-template-columns: 1fr 1fr;
+  }
+
+  @media screen and (orientation: landscape) {
+    /* Estilos para telas em orientação paisagem */
+    width: 50vw;
+    margin: auto;
   }
 
   .form-control{
@@ -39,7 +61,7 @@ export const FormItem = styled.div`
   display: flex;
   justify-content: center;
   padding-top: 0;
-  
+  font-family: 'Poppins', sans-serif !important;
 
   .text-field {
     width: 320px;
@@ -48,6 +70,9 @@ export const FormItem = styled.div`
     justify-content: center;
     margin-bottom: 0px;
     padding-top: 0;
+    border-radius: 4px;
+    color: #fefefe;
+    
   }
 
   .left-icon {

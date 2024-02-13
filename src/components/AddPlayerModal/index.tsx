@@ -20,9 +20,9 @@ interface AddPlayerModalProps {
   players: Player[]
 }
 
-const AddPlayerModal = ({ isOpen, close, rooms, players }: AddPlayerModalProps) => {
+const AddPlayerModal = ({ isOpen, close, rooms, players, }: AddPlayerModalProps) => {
   const router = useRouter()
-  const { changePlayerName, handleCreateRoom } = useGameContext()
+  const { changePlayerName, handleCreateRoom, joinRoom, startRound } = useGameContext()
   const [actualStep, setActualStep] = React.useState<number>(1)
   const [playerName, setPlayerName] = React.useState<string>('')
   const [roomName, setRoomName] = React.useState<string>('')
@@ -36,6 +36,12 @@ const AddPlayerModal = ({ isOpen, close, rooms, players }: AddPlayerModalProps) 
     }
   };
 
+  function handleJoinRoom(roomId: string): void {
+    if (roomId) {
+        joinRoom(roomId)
+        router.push(`/rooms/${roomId}`);
+    }
+}
 
   const items = [
     {
@@ -93,8 +99,7 @@ const AddPlayerModal = ({ isOpen, close, rooms, players }: AddPlayerModalProps) 
                   rooms.map(room => <Button onClick={(e) => {
                     e.stopPropagation()
                     e.preventDefault()
-                    router.push(`/room/${room.id}`);
-                    // history.push(`/room/${room.id}`)
+                    handleJoinRoom(room.id)
                   }} className="room_btn" key={room.id}>{room.name} <DoorOpenFill size={18} color='#323232' /></Button>)
                 }
               </div>
